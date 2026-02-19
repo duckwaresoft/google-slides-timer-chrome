@@ -461,3 +461,133 @@ The extension automatically detects your Chrome language and displays localized 
 English Chrome: February 18, 2026 | In progress
 Spanish Chrome: Febrero 18, 2026 | En progreso
 ```
+
+## Development
+
+### Version Management & Release Process
+
+This project uses **semantic versioning** (`MAJOR.MINOR.PATCH`) and **git tags** to track releases.
+
+#### Semantic Versioning Rules
+
+- **PATCH** (1.7.0 → 1.7.1): Bug fixes, no new features
+- **MINOR** (1.7.0 → 1.8.0): New features, backward compatible
+- **MAJOR** (1.0.0 → 2.0.0): Breaking changes
+
+**Note:** Documentation-only changes typically don't require a version bump.
+
+#### Release Workflow
+
+When you're ready to release a new version (e.g., v1.8.0):
+
+**1. Update version numbers in three files:**
+```bash
+# manifest.json
+"version": "1.8.0"
+
+# package.json
+"version": "1.8.0"
+
+# CLAUDE.md (version history section)
+Add entry for v1.8.0
+```
+
+**2. Commit the version bump:**
+```bash
+git add manifest.json package.json CLAUDE.md
+git commit -m "Bump version to 1.8.0"
+git push
+```
+
+**3. Create and push git tag:**
+```bash
+git tag -a v1.8.0 -m "Release v1.8.0
+
+New features:
+- Feature 1
+- Feature 2
+
+Bug fixes:
+- Fix 1
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+
+git push origin v1.8.0
+```
+
+**4. Create GitHub Release:**
+1. Go to: https://github.com/elpatopedraza/google-slides-timer-chrome/releases/new
+2. Select tag: `v1.8.0`
+3. Auto-generate release notes or use tag message
+4. Attach ZIP file for Chrome Web Store (see below)
+5. Publish release
+
+#### Creating Distribution Package for Chrome Web Store
+
+Create a ZIP file with **only production files** (exclude dev/test files):
+
+```bash
+cd "/Users/apedrazainfante/Downloads/Slides Timer for Google Slides"
+
+zip -r google-slides-timer-chrome-v1.8.0.zip . \
+  -x "*.git*" \
+  -x "*node_modules*" \
+  -x "*coverage*" \
+  -x "*tests*" \
+  -x "*.md" \
+  -x "jest.config.js" \
+  -x "package*.json" \
+  -x "icon.svg"
+```
+
+This creates a clean package containing only:
+- `manifest.json`
+- `content.js`
+- `popup.html`, `popup.js`, `styles.css`
+- `src/` directory (services, constants, utils)
+- Icon files (`icon16.png`, `icon48.png`, `icon128.png`)
+
+**Upload this ZIP to Chrome Web Store Developer Dashboard.**
+
+#### View All Releases
+
+- **Tags**: https://github.com/elpatopedraza/google-slides-timer-chrome/tags
+- **Releases**: https://github.com/elpatopedraza/google-slides-timer-chrome/releases
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Open HTML coverage report
+open coverage/lcov-report/index.html
+```
+
+**Test suite status:**
+- ✅ 254 tests passing
+- ✅ 99%+ coverage on all services
+- ⏱️ ~2 seconds runtime
+
+### Project Structure
+
+```
+google-slides-timer-chrome/
+├── manifest.json              # Extension manifest
+├── content.js                 # Entry point
+├── popup.html/js              # Extension popup
+├── src/
+│   ├── constants/             # Enums (SessionStatus, Locale)
+│   ├── services/              # 11 SOLID services
+│   ├── utils/                 # Utilities (LanguageDetector)
+│   └── SlidesTimerExtension.js # Main orchestrator
+└── tests/                     # Test suite
+```
+
+See `CLAUDE.md` for complete technical documentation.
