@@ -1,0 +1,22 @@
+{
+  "name": "@duckwaresoft/google-slides-timer-chrome",
+  "version": "1.7.0",
+  "description": "Chrome extension that replaces placeholder text in Google Slides with real-time timer and time information during presentations",
+  "main": "content.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:verbose": "jest --verbose"
+  },
+  "keywords": ["chrome-extension", "google-slides", "timer", "presentation", "slides"],
+  "author": "Duckwaresoft",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "^0.1.36",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
+    "puppeteer": "^24.37.4"
+  }
+}

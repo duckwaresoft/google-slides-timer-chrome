@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slides Timer for Google Slides</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Slides Timer for Google Slides</h1>
+
+    <div class="language-selector">
+      <label for="languageSelect" data-i18n="POPUP_LANGUAGE_LABEL"></label>
+      <select id="languageSelect">
+        <option value="auto" data-i18n="POPUP_LANGUAGE_AUTO"></option>
+        <option value="en" data-i18n="POPUP_LANGUAGE_ENGLISH"></option>
+        <option value="es" data-i18n="POPUP_LANGUAGE_SPANISH"></option>
+      </select>
+      <small class="language-hint" data-i18n="POPUP_LANGUAGE_HINT"></small>
+    </div>
+
+    <div class="info-box how-it-works">
+      <p><strong>📝 <span data-i18n="POPUP_HOW_IT_WORKS"></span></strong></p>
+      <ol style="margin: 8px 0; padding-left: 20px; font-size: 13px;">
+        <li data-i18n="POPUP_STEP_1"></li>
+        <li data-i18n="POPUP_STEP_2"></li>
+        <li data-i18n="POPUP_STEP_3"></li>
+      </ol>
+    </div>
+
+    <div class="info-box">
+      <p><strong>⏱️ <span data-i18n="POPUP_TIMER_TITLE"></span></strong></p>
+      <ul>
+        <li><code>&lt;&lt;5:00-&gt;&gt;</code> - <span data-i18n="POPUP_DESC_COUNTDOWN"></span></li>
+        <li><code>&lt;&lt;2:00+&gt;&gt;</code> - <span data-i18n="POPUP_DESC_COUNTUP"></span></li>
+        <li><code>&lt;&lt;time&gt;&gt;</code> - <span data-i18n="POPUP_DESC_TIME"></span></li>
+        <li><code>&lt;&lt;date&gt;&gt;</code> - <span data-i18n="POPUP_DESC_DATE"></span></li>
+      </ul>
+
+      <p><strong>📅 <span data-i18n="POPUP_SESSION_TITLE"></span></strong></p>
+      <p style="font-size: 12px; margin: 4px 0 8px 0; color: #5f6368; font-style: italic;" data-i18n="POPUP_SESSION_WARNING"></p>
+      <ul>
+        <li><code>&lt;&lt;start&gt;&gt;</code> / <code>&lt;&lt;end&gt;&gt;</code> - <span data-i18n="POPUP_DESC_START_END"></span></li>
+        <li><code>&lt;&lt;startTime&gt;&gt;</code> / <code>&lt;&lt;endTime&gt;&gt;</code> - <span data-i18n="POPUP_DESC_TIME_ONLY"></span></li>
+        <li><code>&lt;&lt;startDate&gt;&gt;</code> / <code>&lt;&lt;endDate&gt;&gt;</code> - <span data-i18n="POPUP_DESC_DATE_ONLY"></span></li>
+        <li><code>&lt;&lt;startLongDate&gt;&gt;</code> / <code>&lt;&lt;endLongDate&gt;&gt;</code> - <span data-i18n="POPUP_DESC_DATE_FULL"></span></li>
+        <li><code>&lt;&lt;status&gt;&gt;</code> - <span data-i18n="POPUP_DESC_STATUS"></span></li>
+        <li><code>&lt;&lt;elapsed&gt;&gt;</code> / <code>&lt;&lt;remaining&gt;&gt;</code> - <span data-i18n="POPUP_DESC_TRACKING"></span></li>
+      </ul>
+
+      <p><strong>🎛️ <span data-i18n="POPUP_MODIFIERS_TITLE"></span></strong></p>
+      <p style="font-size: 12px; margin: 4px 0 8px 0; color: #5f6368;" data-i18n="POPUP_MODIFIERS_DESC"></p>
+      <ul>
+        <li><code>^</code> = <span data-i18n="POPUP_MODIFIER_NO_SECONDS"></span> | <code>&</code> = <span data-i18n="POPUP_MODIFIER_24H"></span></li>
+        <li><span data-i18n="POPUP_EXAMPLES"></span> <code>&lt;&lt;time^&gt;&gt;</code> → 2:30 PM | <code>&lt;&lt;start&^&gt;&gt;</code> → 2026-02-19 14:00</li>
+      </ul>
+    </div>
+
+    <div class="time-inputs">
+      <div class="input-group">
+        <label for="startTime" data-i18n="POPUP_LABEL_START"></label>
+        <input type="datetime-local" id="startTime" step="1" title="">
+        <small class="input-hint" data-i18n="POPUP_HINT_DATETIME"></small>
+      </div>
+
+      <div class="input-group">
+        <label for="endTime" data-i18n="POPUP_LABEL_END"></label>
+        <input type="datetime-local" id="endTime" step="1" title="">
+        <small class="input-hint" data-i18n="POPUP_HINT_DATETIME"></small>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button id="setTimes" class="btn btn-primary" data-i18n="POPUP_BTN_SET"></button>
+      <button id="clearTimes" class="btn btn-secondary" data-i18n="POPUP_BTN_CLEAR"></button>
+    </div>
+
+    <div id="status" class="status-display"></div>
+
+    <div class="current-time-display">
+      <div class="label" data-i18n="POPUP_CURRENT_TIME"></div>
+      <div id="currentTime" class="time-large"></div>
+    </div>
+  </div>
+
+  <script src="src/constants/Locale.js"></script>
+  <script src="src/services/TranslationService.js"></script>
+  <script src="src/utils/LanguageDetector.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
