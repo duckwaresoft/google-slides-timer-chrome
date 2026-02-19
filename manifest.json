@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Slides Timer for Google Slides",
-  "version": "1.0",
+  "version": "1.7.0",
   "description": "Live timers, session tracking, and date/time display for presentations with multi-language support",
   "action": {
     "default_popup": "popup.html",
