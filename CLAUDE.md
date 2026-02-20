@@ -139,6 +139,7 @@ Add symbols after time placeholders to control format:
 My extension/
 ├── manifest.json                    # Extension manifest (loads SOLID services)
 ├── content.js                       # ✅ ACTIVE: Entry point with dependency injection
+├── service-worker.js                # Minimal service worker for extension lifecycle
 ├── popup.html                       # Extension popup UI
 ├── popup.js                         # Popup logic
 ├── styles.css                       # Popup styles
@@ -164,27 +165,34 @@ My extension/
 │   └── utils/
 │       └── LanguageDetector.js          # Detects Chrome UI language for auto i18n
 │
-├── tests/                       # Test suite
-│   ├── constants/                   # Constant tests
+├── tests/                       # Test suite (265 tests: 254 unit + 11 E2E)
+│   ├── constants/                   # Unit: Constant tests
 │   │   ├── SessionStatus.test.js            # 5 tests
 │   │   └── Locale.test.js                   # 4 tests
 │   ├── SlidesTimerExtension.test.js         # 14 tests (main orchestrator)
-│   ├── services/                    # ✅ Service tests
-│       ├── DOMNodeTracker.test.js           # 13 tests
-│       ├── PlaceholderParser.test.js        # 10 tests
-│       ├── PlaceholderReplacer.test.js      # 20 tests
-│       ├── PresentationModeDetector.test.js # 5 tests
-│       ├── SessionStatusCalculator.test.js  # 20 tests
-│       ├── StorageService.test.js           # 9 tests
-│       ├── TimeFormatter.test.js            # 17 tests
-│       ├── TimerManager.test.js             # 17 tests
-│       ├── TranslationService.test.js       # 10 tests
-│       └── StatusFormatter.test.js          # 8 tests
-│   └── utils/                       # Utility tests
-│       └── LanguageDetector.test.js         # 29 tests
+│   ├── services/                    # Unit: Service tests
+│   │   ├── DOMNodeTracker.test.js           # 13 tests
+│   │   ├── PlaceholderParser.test.js        # 10 tests
+│   │   ├── PlaceholderReplacer.test.js      # 31 tests
+│   │   ├── PresentationModeDetector.test.js # 5 tests
+│   │   ├── SessionStatusCalculator.test.js  # 20 tests
+│   │   ├── StorageService.test.js           # 15 tests
+│   │   ├── TimeFormatter.test.js            # 23 tests
+│   │   ├── TimerManager.test.js             # 17 tests
+│   │   ├── TranslationService.test.js       # 16 tests
+│   │   └── StatusFormatter.test.js          # 8 tests
+│   ├── utils/                       # Unit: Utility tests
+│   │   └── LanguageDetector.test.js         # 29 tests
+│   ├── e2e/                         # E2E: Browser tests
+│   │   ├── setup.js                         # Shared Puppeteer configuration
+│   │   ├── popup.test.js                    # 3 tests (popup functionality)
+│   │   └── placeholders.test.js             # 8 tests (placeholder replacement)
+│   └── fixtures/                    # Test fixtures
+│       └── mock-slides.html                 # Minimal Google Slides structure
 │
 ├── package.json                     # npm dependencies
-├── jest.config.js                   # Jest configuration
+├── jest.config.js                   # Jest configuration (unit tests)
+├── jest.config.e2e.js               # Jest configuration (E2E tests)
 ├── node_modules/                    # Dependencies (gitignored)
 ├── coverage/                        # Test coverage reports (gitignored)
 │
@@ -312,9 +320,9 @@ This pattern was established in v1.6 (February 2026) when we encountered variabl
 ### Test Suite Status
 
 ```
-✅ 254 tests passing
-✅ 14 test suites (all SOLID services + constants + utilities)
-⏱️  ~2.0 seconds runtime
+✅ 265 tests passing (254 unit + 11 E2E)
+✅ 16 test suites (14 unit + 2 E2E)
+⏱️  Unit tests: ~2 seconds | E2E tests: ~30 seconds
 ✅ 99%+ coverage on all services
 ```
 
@@ -323,12 +331,12 @@ This pattern was established in v1.6 (February 2026) when we encountered variabl
 Tests mirror the source structure (`src/` → `tests/`):
 
 ```
-tests/ (254 tests total)
-├── constants/
+tests/ (265 tests total)
+├── constants/                        # Unit tests
 │   ├── SessionStatus.test.js (5 tests)
 │   └── Locale.test.js (4 tests)
 ├── SlidesTimerExtension.test.js (14 tests)
-├── services/
+├── services/                         # Unit tests
 │   ├── DOMNodeTracker.test.js (13 tests)
 │   ├── PlaceholderParser.test.js (10 tests)
 │   ├── PlaceholderReplacer.test.js (31 tests)
@@ -339,8 +347,14 @@ tests/ (254 tests total)
 │   ├── TimerManager.test.js (17 tests)
 │   ├── TranslationService.test.js (16 tests)
 │   └── StatusFormatter.test.js (8 tests)
-└── utils/
-    └── LanguageDetector.test.js (29 tests)
+├── utils/                            # Unit tests
+│   └── LanguageDetector.test.js (29 tests)
+├── e2e/                              # E2E tests
+│   ├── setup.js                      # Shared Puppeteer setup
+│   ├── popup.test.js (3 tests)       # Popup functionality
+│   └── placeholders.test.js (8 tests) # Placeholder replacement
+└── fixtures/                         # Test fixtures
+    └── mock-slides.html              # Minimal Google Slides structure
 ```
 
 ### Running Tests
@@ -348,10 +362,16 @@ tests/ (254 tests total)
 ```bash
 cd "/Users/apedrazainfante/Downloads/My extension"
 
-# Run all tests
-npm test
+# Run all tests (unit + E2E)
+npm run test:all
 
-# Run with coverage report
+# Run only unit tests (fast)
+npm run test:unit
+
+# Run only E2E tests (slower, opens browser)
+npm run test:e2e
+
+# Run with coverage report (unit tests only)
 npm run test:coverage
 
 # Open HTML coverage report
@@ -359,7 +379,44 @@ open coverage/lcov-report/index.html
 
 # Watch mode (auto-run on file changes)
 npm run test:watch
+
+# Default (runs all tests)
+npm test
 ```
+
+### E2E Tests
+
+**Purpose:** End-to-end tests using Puppeteer to verify the extension works in a real browser environment.
+
+**What's tested:**
+- **Popup functionality** (`popup.test.js`):
+  - UI renders correctly
+  - Language selection works
+  - Session time configuration saves to storage
+- **Placeholder replacement** (`placeholders.test.js`):
+  - Mock Google Slides page structure
+  - Countdown/countup timers (`<<5:00->>`, `<<2:00+>>`)
+  - Time placeholders (`<<time>>`, `<<time^>>`, `<<time&>>`)
+  - Date placeholders (`<<date>>`, `<<shortdate>>`, `<<longdate>>`)
+  - Format modifiers work correctly
+  - Session tracking (`<<status>>`, `<<remaining>>`, `<<duration>>`)
+  - Timers decrement/increment over time
+
+**Key patterns:**
+- Uses Puppeteer with `enableExtensions` parameter
+- Extracts extension ID from service worker URL
+- Navigates directly to `chrome-extension://{id}/popup.html`
+- Mocks Chrome APIs for local file testing
+- Dynamically injects placeholders for testing
+- Bypasses presentation mode detection via `startReplacements()`
+
+**Configuration:**
+- `jest.config.e2e.js` - Separate config for E2E tests
+- Node environment (not JSDOM)
+- 30-second timeout per test
+- No coverage collection (tests run in browser)
+
+**Note:** E2E tests are slower (~30s) because they launch a real Chrome instance. Run `npm run test:unit` for faster feedback during development.
 
 ### Test Coverage
 
@@ -1155,7 +1212,18 @@ chrome://extensions/ → Click reload icon
 
 ## Version History
 
-### v1.7 - Current (February 2026)
+### v1.8 - Current (February 2026)
+- ✅ **E2E test suite implemented** - comprehensive browser-based testing with Puppeteer
+- ✅ **11 E2E tests** covering popup functionality and placeholder replacement
+- ✅ **Popup tests**: UI rendering, language selection, session time configuration
+- ✅ **Placeholder tests**: all timer types, time/date formats, modifiers, session tracking
+- ✅ **Simplified mock HTML** - minimal fixture with dynamic placeholder injection
+- ✅ Service worker added for E2E test support
+- ✅ Separate Jest config for E2E tests (Node environment, 30s timeout)
+- ✅ Test commands: `npm run test:all` (unit + E2E), `npm run test:unit`, `npm run test:e2e`
+- ✅ 265 tests passing total (254 unit + 11 E2E) with 99%+ coverage
+
+### v1.7 - (February 2026)
 - ✅ **Manual language selector in popup** - users can override Chrome's auto-detected language
 - ✅ **Three options**: Auto (Chrome language), English, Español
 - ✅ **Persistent preference** - choice saved in chrome.storage.local and applies everywhere
@@ -1164,7 +1232,7 @@ chrome://extensions/ → Click reload icon
 - ✅ Both popup and slide placeholders respect language preference
 - ✅ Gradient background reversed (dark to light) for better button contrast
 - ✅ Fixed variable hoisting issue with enum imports (removed `var` keyword)
-- ✅ 254 tests passing with 99%+ coverage (added 6 new tests for language storage)
+- ✅ 254 unit tests passing with 99%+ coverage (added 6 new tests for language storage)
 
 ### v1.6 - (February 2026)
 - ✅ **Locale enum for type safety** - all locale handling uses `Locale.EN`, `Locale.ES` instead of strings
