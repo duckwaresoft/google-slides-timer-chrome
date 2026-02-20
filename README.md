@@ -561,8 +561,14 @@ This creates a clean package containing only:
 ### Running Tests
 
 ```bash
-# Run all tests
-npm test
+# Run all tests (unit + E2E)
+npm run test:all
+
+# Run only unit tests (fast)
+npm run test:unit
+
+# Run only E2E tests (browser-based, slower)
+npm run test:e2e
 
 # Run tests in watch mode
 npm run test:watch
@@ -575,9 +581,9 @@ open coverage/lcov-report/index.html
 ```
 
 **Test suite status:**
-- ✅ 254 tests passing
+- ✅ 265 tests passing (254 unit + 11 E2E)
 - ✅ 99%+ coverage on all services
-- ⏱️ ~2 seconds runtime
+- ⏱️ Unit tests: ~2 seconds | E2E tests: ~30 seconds
 
 ### Project Structure
 
@@ -585,13 +591,16 @@ open coverage/lcov-report/index.html
 google-slides-timer-chrome/
 ├── manifest.json              # Extension manifest
 ├── content.js                 # Entry point
+├── service-worker.js          # Extension service worker
 ├── popup.html/js              # Extension popup
 ├── src/
 │   ├── constants/             # Enums (SessionStatus, Locale)
 │   ├── services/              # 11 SOLID services
 │   ├── utils/                 # Utilities (LanguageDetector)
 │   └── SlidesTimerExtension.js # Main orchestrator
-└── tests/                     # Test suite
+└── tests/
+    ├── [services/utils/...]   # Unit tests (254)
+    └── e2e/                   # E2E tests (11)
 ```
 
 See `CLAUDE.md` for complete technical documentation.
