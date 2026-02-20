@@ -865,6 +865,33 @@ setInterval(replacePlaceholders, 1000);
 
 **Note:** All other extension text (labels, buttons, status messages, placeholders) respects the language setting. Only the native browser datetime picker uses the browser's language.
 
+### 7. Center-Aligned Text May Not Stay Centered
+
+**Issue:** When placeholders are replaced with actual values, center-aligned text may appear slightly off-center.
+
+**Root cause:** The extension only changes text content (`<<start>>` → `6:00 PM`), but Google Slides doesn't automatically recalculate text centering. Different character widths in proportional fonts mean the visual width changes.
+
+**Example:**
+```
+Original (centered):  "Iniciamos: <<start>>"
+After replacement:    "Iniciamos: 6:00 PM"
+                      ↑ Visual centering not recalculated
+```
+
+**Why we can't fix it:**
+- Google Slides uses complex canvas/SVG rendering in presentation mode
+- No access to Google Slides' layout engine to trigger re-centering
+- Extension can only change text content, not text box alignment properties
+- No public API to recalculate text positioning after content changes
+
+**Workarounds:**
+- ✅ **Recommended:** Use left-aligned text inside center-aligned text boxes
+- ⚠️ Use monospace fonts (like Courier) for consistent character widths
+- ⚠️ Design placeholders with similar length to output values
+- ✅ Accept as expected behavior for dynamic content
+
+**Note:** This is a fundamental limitation of how browser extensions interact with Google Slides' rendering system. The original "Slides Timer" extension has the same limitation.
+
 ## Future Enhancements
 
 ### Potential Features

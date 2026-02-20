@@ -366,6 +366,7 @@ Status: <<status>>
 - **No configuration needed**: Timer features work without setting up start/end times
 - **Timers reset**: When you exit and re-enter presentation mode, countdown/countup timers reset
 - **Time-range persists**: Your start/end times are saved even after closing the browser
+- **Center-aligned text**: For best results with dynamic content, use left-aligned text inside center-aligned text boxes (center-aligned text may not recalculate positioning after placeholder replacement)
 
 ## Format Reference
 
